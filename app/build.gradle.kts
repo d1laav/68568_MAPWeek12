@@ -89,4 +89,5 @@ dependencies {
     // Work testing
     androidTestImplementation("androidx.work:work-testing:2.10.0")
 
+    implementation("androidx.work:work-runtim-ktx:2.8.1")
 }
