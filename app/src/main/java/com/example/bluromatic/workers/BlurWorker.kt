@@ -44,30 +44,33 @@ class BlurWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
             applicationContext
         )
 
-        return@withContext try {
-            val picture = BitmapFactory.decodeResource(
-                applicationContext.resources,
-                R.drawable.android_cupcake
-            )
+        return withContext(Dispatchers.IO) {
 
-            val output = blurBitmap(picture, 1)
+            delay(DELAY_TIME_MILLIS)
+            return@withContext try {
+                val picture = BitmapFactory.decodeResource(
+                    applicationContext.resources,
+                    R.drawable.android_cupcake
+                )
+                val output = blurBitmap(picture, 1)
 
-            // Write bitmap to a temp file
-            val outputUri = writeBitmapToFile(applicationContext, output)
+                val outputUri = writeBitmapToFile(applicationContext, output)
 
-            makeStatusNotification(
-                "Output is $outputUri",
-                applicationContext
-            )
+                makeStatusNotification(
+                    "Output is $outputUri",
+                    applicationContext
+                )
 
-            Result.success()
-        } catch (throwable: Throwable) {
-            Log.e(
-                TAG,
-                applicationContext.resources.getString(R.string.error_applying_blur),
-                throwable
-            )
-            Result.failure()
+                Result.success()
+            } catch (throwable: Throwable) {
+                Log.e(
+                    TAG,
+                    applicationContext.resources.getString(R.string.error_applying_blur),
+                    throwable
+                )
+
+                Result.failure()
+            }
         }
 
         return withContext(Dispatchers.IO) {
@@ -105,6 +108,5 @@ class BlurWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
                 Result.failure()
             }
         }
-
     }
 }
