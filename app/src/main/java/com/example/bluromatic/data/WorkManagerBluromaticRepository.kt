@@ -54,6 +54,10 @@ class WorkManagerBluromaticRepository(context: Context) : BluromaticRepository {
      */
     override fun applyBlur(blurLevel: Int) {
         // Add WorkRequest to Cleanup temporary images
+        val blurBuilder = OneTimeWorkRequestBuilder<BlurWorker>()
+        blurBuilder.setInputData(createInputDataForWorkRequest(blurLevel, imageUri))
+
+        workManager.enqueue(blurBuilder.build())
 
         var continuation = workManager
             .beginUniqueWork(
@@ -68,9 +72,7 @@ class WorkManagerBluromaticRepository(context: Context) : BluromaticRepository {
             .build()
 
         // Add WorkRequest to blur the image
-        val blurBuilder = OneTimeWorkRequestBuilder<BlurWorker>()
 
-        workManager.enqueue(blurBuilder.build())
 
         // Input the Uri for the blur operation along with the blur level
         blurBuilder.setInputData(createInputDataForWorkRequest(blurLevel, imageUri))
