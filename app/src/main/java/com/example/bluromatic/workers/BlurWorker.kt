@@ -31,7 +31,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
-
 private const val TAG = "BlurWorker"
 
 class BlurWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, params) {
@@ -40,7 +39,12 @@ class BlurWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
         val resourceUri = inputData.getString(KEY_IMAGE_URI)
         val blurLevel = inputData.getInt(KEY_BLUR_LEVEL, 1)
 
-        return try {
+        makeStatusNotification(
+            applicationContext.resources.getString(R.string.blurring_image),
+            applicationContext
+        )
+
+        return@withContext try {
             val picture = BitmapFactory.decodeResource(
                 applicationContext.resources,
                 R.drawable.android_cupcake
@@ -64,21 +68,6 @@ class BlurWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
                 throwable
             )
             Result.failure()
-        }
-
-        makeStatusNotification(
-            applicationContext.resources.getString(R.string.blurring_image),
-            applicationContext
-        )
-
-        return withContext(Dispatchers.IO) {
-            delay(DELAY_TIME_MILLIS)
-
-            return@withContext {
-
-            } catch (throwable: Throwable){
-
-            }
         }
 
         return withContext(Dispatchers.IO) {
@@ -116,5 +105,6 @@ class BlurWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
                 Result.failure()
             }
         }
+
     }
 }
